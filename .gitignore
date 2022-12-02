@@ -1,3 +1,9 @@
+# Ignore all "Day" prefixed files to ignore binaries
+*/Day*
+
+# Unignore .hs files
+!*/Day*.hs
+
 dist
 dist-*
 cabal-dev
