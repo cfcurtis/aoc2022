@@ -1,6 +1,6 @@
 import System.IO
-import Data.Char
-import Data.List.Split
+import Data.Char ( ord, isAsciiLower, isAsciiUpper )
+import Data.List.Split ( chunksOf )
 
 -- maps the character to the priority
 priority :: Char -> Int
