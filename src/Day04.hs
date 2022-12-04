@@ -17,7 +17,6 @@ isContained _ = 0
 anyOverlap :: [[Int]] -> Int
 anyOverlap [a, b]
     | head a <= b !! 1 && a !! 1 >= head b = 1
-    | head b <= a !! 1 && b !! 1 >= head a = 1
     | otherwise = 0
 anyOverlap _ = 0
 
