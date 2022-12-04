@@ -1,5 +1,6 @@
-import System.IO
-import Data.List
+module Day02 (solve) where
+import System.IO ()
+import Data.List ()
 
 -- Convert the characters into the score values
 toScore :: Char -> Int
@@ -39,10 +40,6 @@ chooseShape _ = []
 part2 :: [[Int]] -> Int
 part2 choices = part1 $ map chooseShape choices
 
-main :: IO ()
-main = do
-    contents <- readFile inFile
-    let choices = listify contents
-    print $ part1 choices
-    print $ part2 choices
-    where inFile = "input.txt"
+solve :: String -> IO ()
+solve contents = putStrLn "--- Day 02 ---" >>
+    print (part1 $ listify contents) >> print (part2 $ listify contents)

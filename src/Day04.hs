@@ -1,4 +1,4 @@
-import System.IO ()
+module Day04 (solve) where
 import Data.List.Split (splitOn)
 
 -- Converts a string of the form "X-Y" into a list of corresponding integers
@@ -34,9 +34,6 @@ part1 = checkPairs isContained
 part2 :: String -> Int
 part2 = checkPairs anyOverlap
 
-main :: IO ()
-main = do
-    contents <- readFile inFile
-    print $ part1 contents
-    print $ part2 contents
-    where inFile = "input.txt"
+solve :: String -> IO ()
+solve contents = putStrLn "--- Day 04 ---" >>
+    print (part1 contents) >> print (part2 contents)

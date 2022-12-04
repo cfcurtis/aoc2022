@@ -1,4 +1,4 @@
-import System.IO
+module Day03 (solve) where
 import Data.Char ( ord, isAsciiLower, isAsciiUpper )
 import Data.List.Split ( chunksOf )
 
@@ -27,9 +27,6 @@ part1 contents = sum $ [priority $ commonElem [fst rucksack, snd rucksack] | ruc
 part2 :: String -> Int
 part2 contents = sum $ [priority $ commonElem elfGroup | elfGroup <- chunksOf 3 $ lines contents]
 
-main :: IO ()
-main = do
-    contents <- readFile inFile
-    print $ part1 contents
-    print $ part2 contents
-    where inFile = "input.txt"
+solve :: String -> IO ()
+solve contents = putStrLn "--- Day 03 ---" >> 
+    print (part1 contents) >> print (part2 contents)
