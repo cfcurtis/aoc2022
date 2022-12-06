@@ -1,7 +1,8 @@
 module Day05 (solve) where
 import Data.List.Split (splitOn)
-import Data.Char (isDigit, isSpace, digitToInt)
+import Data.Char (isDigit, isSpace, digitToInt, isAlpha)
 import Data.List (transpose)
+import Debug.Trace (trace)
 
 -- Parses the crate stack from the input
 readCrates :: String -> [String]
@@ -13,38 +14,30 @@ readCrates contents =
 -- Parses the instructions from the input
 readInstructions :: String -> [[Int]]
 readInstructions contents =
-    [map digitToInt $ filter isDigit line | -- drop the text from the instructions
+    [map read . words $ filter (not . isAlpha) line | -- drop the text from the instructions
     line <- lines $ last $ splitOn "\n\n" contents] -- split the crate definition from instructions
 
-pop :: String -> String
-pop [] = []
-pop (x:xs) = xs
+-- manipulate the crates
+modStack :: [Char] -> Int -> Int -> (Int, String) -> String
+modStack crate from to (index, stack)
+    | null crate = stack -- Don't drop an empty crate
+    | index == from = drop 1 stack -- drop the crate from the stack if the current index is the from index
+    | index == to = crate ++ stack -- push the crate onto the stack if the current index is the to index
+    | otherwise = stack -- otherwise, leave the stack unchanged
 
-push :: String -> Char -> String
-push xs x = x:xs
-
+-- move crates according to the instructions
 moveCrate :: [String] -> [Int] -> [String]
 moveCrate crates (num:from:to:rest)
     | num == 0 = crates
-    | num == 1 =
-        take (from - 1) crates
-        ++ [tail $ crates !! (from - 1)]
-        ++ take (to - from - 1) (drop from crates)
-        ++ [head (crates !! (from - 1)) : (crates !! (to - 1))]
-        ++ take (length crates - to) (drop to crates)
-    | num == 1 && from > to =
-        take (to - 1) crates
-        ++ [head (crates !! (from - 1)) : (crates !! (to - 1))]
-        ++ take (from - to - 1) (drop to crates)
-        ++ [tail $ crates !! (from - 1)]
-        ++ take (length crates - from) (drop from crates)
+    | num == 1 = zipWith (curry (modStack crate from to)) [1..(length crates)] crates
     | from == to = crates
-    | otherwise = moveCrate crates [num - 1, from, to]
+    | otherwise = moveCrate (moveCrate crates [1, from, to]) [num - 1, from, to]
+        where crate = trace (show crates ++ show [num, from, to]) take 1 $ crates !! (from - 1)
 moveCrate _ _ = []
 
 -- Which crates are on top of the stacks?
 part1 :: String -> String
-part1 contents = head $ readCrates contents
+part1 contents = map head $ foldl moveCrate (readCrates contents) (readInstructions contents)
 
 -- Placeholder for part 2
 part2 :: String -> Int
