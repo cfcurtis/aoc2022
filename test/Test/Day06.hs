@@ -13,7 +13,7 @@ input = ["mjqjpqmgbljsphdztnvjfqwrcgsmlb",
 expected1 :: String
 expected1 = ["7","5","6","10","11"] !! 1
 expected2 :: String
-expected2 = "0"
+expected2 = "23"
 
 tests =
   createTests

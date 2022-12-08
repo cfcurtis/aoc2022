@@ -4,12 +4,14 @@ import qualified Data.Map as M
 import Data.Maybe (mapMaybe)
 import System.Environment
 import qualified Test.Day06 (tests)
+import qualified Test.Day07 (tests)
 import Test.HUnit
 
 testcases :: Map String Test
 testcases =
   M.fromList
-    [ ("06", Test.Day06.tests)
+    [ ("06", Test.Day06.tests),
+      ("07", Test.Day07.tests)
     ]
 
 gather :: [String] -> [Test]

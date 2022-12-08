@@ -33,6 +33,7 @@ library
         Day04
         Day05
         Day06
+        Day07
     build-depends:    
         base ^>=4.14.2.0,
         split,
@@ -53,6 +54,7 @@ test-suite test
     default-language: Haskell2010
     other-modules:
         Test.Day06
+        Test.Day07
         Common
 
 executable aoc2022
