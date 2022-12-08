@@ -27,13 +27,18 @@ mkdir fs parent dirName = Map.insert dirName Directory {
     } $ Map.adjust (\d -> d {subDirs = dirName : subDirs d}) parent fs
     -- copilot wrote the last line
 
+-- Get the subdirectories, accounting for the Maybeness of Map.lookup
+getSubDirs :: Maybe Directory -> [String]
+getSubDirs Nothing = []
+getSubDirs (Just d) = subDirs d
+
 -- Changes from the current directory to the given one, 
 -- or creates it if not already in the filesystem
 changeDir :: FileSystem -> String -> String -> (String, FileSystem)
 changeDir fs currentDir toDir
-    | elem toDir $ subDirs (Map.lookup currentDir fs) = (toDir, fs)
+    | elem toDir $ getSubDirs (Map.lookup currentDir fs) = (toDir, fs)
     | not . Map.member toDir $ fs = (toDir, mkdir fs currentDir toDir)
-    | otherwise = (currentDir, fs) -- can't change directories to on
+    | otherwise = (currentDir, fs) -- bad command
 
 -- -- Parse the commands into a tree of directories
 -- parseCommands :: Directory -> String -> Directory
