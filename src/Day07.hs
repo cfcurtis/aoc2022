@@ -3,6 +3,8 @@ import Data.Char (isDigit)
 import Data.List.Split (splitOn)
 import Prelude hiding (lookup)
 import qualified Data.Map as Map
+import Data.Maybe ( fromMaybe )
+import Data.IntMap (findWithDefault, singleton)
 
 data Directory = Directory {
     size :: Int, 
@@ -12,12 +14,6 @@ data Directory = Directory {
 
 type FileSystem = Map.Map String Directory
 
--- reads the size of a file after an ls command
-fileSize :: String -> Int
-fileSize command
-    | all isDigit $ head $ words command = read $ head $ words command
-    | otherwise = 0
-
 -- Creates a new directory in the filesystem
 mkdir :: FileSystem -> String -> String -> FileSystem
 mkdir fs parent dirName = Map.insert dirName Directory {
@@ -26,25 +22,32 @@ mkdir fs parent dirName = Map.insert dirName Directory {
     subDirs = []
     } $ Map.adjust (\d -> d {subDirs = dirName : subDirs d}) parent fs
     -- copilot wrote the last line
+    -- lambda function: \ is the lambda operator, d is the parent directory, 
+    -- so we're concatenating the subDirs list of the parent with the new directory name
 
--- Get the subdirectories, accounting for the Maybeness of Map.lookup
-getSubDirs :: Maybe Directory -> [String]
-getSubDirs Nothing = []
-getSubDirs (Just d) = subDirs d
+-- The root directory
+root:: Directory
+root = Directory {size=0, parent="/", subDirs=[]}
 
 -- Changes from the current directory to the given one, 
 -- or creates it if not already in the filesystem
 changeDir :: FileSystem -> String -> String -> (String, FileSystem)
 changeDir fs currentDir toDir
-    | elem toDir $ getSubDirs (Map.lookup currentDir fs) = (toDir, fs)
+    | toDir == ".." = (parent $ Map.findWithDefault root currentDir fs, fs)
+    | elem toDir $ subDirs (Map.findWithDefault root currentDir fs) = (toDir, fs)
     | not . Map.member toDir $ fs = (toDir, mkdir fs currentDir toDir)
-    | otherwise = (currentDir, fs) -- bad command
+    | otherwise = (currentDir, fs) -- Can't change to this directory from here
+
+-- parse the ls output
+parseLs :: String -> (String, FileSystem) -> (String, FileSystem)
+parseLs lsOutput (currentDir, fs) 
+    | all isDigit $ head $ words lsOutput = (currentDir, Map.adjust (\d -> d {size = size + read $ head $ words lsOutput} currentDir fs)
 
 -- -- Parse the commands into a tree of directories
--- parseCommands :: Directory -> String -> Directory
--- parseCommands command
---     | command == "$ cd .." = 
---     | (take 4 command) == "$ cd" = 
+applyCommands :: (String, String) -> (String, FileSystem) -> (String, FileSystem)
+applyCommands (cmd, operand) (currentDir, fs)
+    | "cd" = changeDir fs currentDir operand
+    | "ls" = parseLs operand (currentDir, fs)
 
 -- Placeholder for part 1
 part1 :: String -> Int
